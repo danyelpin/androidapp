@@ -19,6 +19,9 @@ public class SimplePaint extends View {
     Paint mPaint;//correntPaint
     //ArrayList<Path> listPath
     //ArrayList<Paint> listPaint
+    //string modotraco = "tracolivre"
+    //public static final string TRACOLIVRE = "tracoLivre" ;
+    //public static final string TRACOCIRCULO = "tracoCirculo" ;
     float x0, yo;
     public SimplePaint(Context context) {
         super(context);
@@ -35,8 +38,15 @@ public class SimplePaint extends View {
         init();
     }
 
+
+
+    //public void mudarTracoCircula(){modotraco = TRACOCIRCULO;
+    //public void mudartracolivre(){modotraco = TRACOLIVRE;}
+    //public void mudarTracoQuadrado(){modotraco = TRACOQUADRADO;
+
     public void init(){
         setClickable(true);
+        //modoTraco = TRACOLIVRE
         mPath = new Path();
         mPaint = new Paint();
         mPaint.setColor(Color.BLACK);
@@ -45,6 +55,7 @@ public class SimplePaint extends View {
         //listPath = new ArrayList<>();
 
         //...
+
     }
 
     public void mudarCor(int color){
@@ -80,10 +91,14 @@ public class SimplePaint extends View {
 
                 break;
             case MotionEvent.ACTION_MOVE:
+                //if(modoTraco == TRACOLIVRE){
                 mPath.lineTo(event.getX(), event.getY());
-                //float r = (xo-x)2-(yo-y)2 distancia euclidiana
-                //mPath.addCircle(x0,y0,r,Path.Direction.ccw);
                 //
+                //if(modoTraco == TRACOCIRCULO{
+                //double r = Math.pow((Double)event.getX()-x0),2)-(yo-y)2 distancia euclidiana
+                //correntepath.reset();
+                //correntePath.addCircle(x0,y0,r.floatvalue,Path.Direction.ccw);
+                //}
 
                 break;
             case MotionEvent.ACTION_UP:
