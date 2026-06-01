@@ -14,12 +14,16 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class SimplePaint extends View {
-    Path mPath;//correntPath
-    Paint mPaint;//correntPaint
-    //ArrayList<Path> listPath
-    //ArrayList<Paint> listPaint
-    float x0, yo;
+    //Path mPath;
+    Path courrentPath;
+    //Paint mPaint;
+    Paint courrentPaint;
+    ArrayList<Path> listPath;
+    ArrayList<Paint> listPaint;
+    float x0, y0;
     public SimplePaint(Context context) {
         super(context);
         init();
@@ -37,36 +41,40 @@ public class SimplePaint extends View {
 
     public void init(){
         setClickable(true);
-        mPath = new Path();
-        mPaint = new Paint();
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(10);
-        mPaint.setStyle(Paint.Style.STROKE);
+        listPath = new ArrayList<>();
+        listPaint = new ArrayList<>();
+        courrentPath = new Path();
+        courrentPaint = new Paint();
+        courrentPaint.setColor(Color.BLACK);
+        courrentPaint.setStrokeWidth(10);
+        courrentPaint.setStyle(Paint.Style.STROKE);
         //listPath = new ArrayList<>();
 
         //...
     }
 
     public void mudarCor(int color){
-
-        //addCamada();
-        mPaint.setColor(color);
+        courrentPaint.setColor(color);
     }
 
     public void addCamada(){
-        //listaPaint.add(correntePaint);
-        //,,,,,
-        //correntePaint = new paint(correntPaint);
-        //.....path = newPath;
+        listPaint.add(courrentPaint);
+        listPath.add(courrentPath);
+
+        courrentPath = new Path();
+
+        Paint novoPaint = new Paint(courrentPaint);
+        courrentPaint = novoPaint;
 
     }
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        //for (int i=0, i<-listPath.size()-1;i++){
-        //canvas de baixo (listPath.get(i), listPaint[i]
-        canvas.drawPath(mPath,mPaint);
+        for (int i=0; i <=listPath.size()-1; i++) {
+            //canvas de baixo (listPath.get(i), listPaint[i]
+            canvas.drawPath(listPath.get(i), listPaint.get(i));
+        }
 
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -76,18 +84,18 @@ public class SimplePaint extends View {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 //xo=event.getx();y0=event.gety();
-                mPath.moveTo(event.getX(),event.getY());
+                courrentPath.moveTo(event.getX(),event.getY());
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                mPath.lineTo(event.getX(), event.getY());
+                courrentPath.lineTo(event.getX(), event.getY());
                 //float r = (xo-x)2-(yo-y)2 distancia euclidiana
                 //mPath.addCircle(x0,y0,r,Path.Direction.ccw);
                 //
 
                 break;
             case MotionEvent.ACTION_UP:
-                //addCamada();
+                addCamada();
                 break;
         }
         invalidate();
