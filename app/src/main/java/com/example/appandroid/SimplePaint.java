@@ -1,5 +1,8 @@
 package com.example.appandroid;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,6 +27,18 @@ public class SimplePaint extends View {
     ArrayList<Path> listPath;
     ArrayList<Paint> listPaint;
     float x0, y0;
+    private Ferramenta ferramenta = Ferramenta.LINHA;
+
+    public void setFerramenta(Ferramenta ferramenta){
+        this.ferramenta = ferramenta;
+    }
+
+    public enum Ferramenta{
+        LINHA,
+        CIRCULO,
+        RETANGULO
+    }
+
     public SimplePaint(Context context) {
         super(context);
         init();
@@ -75,6 +90,7 @@ public class SimplePaint extends View {
             //canvas de baixo (listPath.get(i), listPaint[i]
             canvas.drawPath(listPath.get(i), listPaint.get(i));
         }
+        canvas.drawPath(courrentPath, courrentPaint);
 
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -83,16 +99,39 @@ public class SimplePaint extends View {
         Log.d("coordenadas",Float.toString(event.getX())+Float.toString(event.getY() ));
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                //xo=event.getx();y0=event.gety();
-                courrentPath.moveTo(event.getX(),event.getY());
+                x0=event.getX();
+                y0=event.getY();
+                courrentPath.moveTo(x0,y0);
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                courrentPath.lineTo(event.getX(), event.getY());
-                //float r = (xo-x)2-(yo-y)2 distancia euclidiana
-                //mPath.addCircle(x0,y0,r,Path.Direction.ccw);
-                //
+                switch (ferramenta){
+                    case LINHA:
+                        courrentPath.lineTo(event.getX(),event.getY());
 
+                    break;
+
+                    case CIRCULO:
+                        float dx = event.getX() - x0;
+                        float dy = event.getY() - y0;
+
+                        float r = dx * dx + dy * dy; //distancia euclidiana
+                        courrentPath.reset();
+                        courrentPath.addCircle(x0, y0, r, Path.Direction.CCW);
+
+                    break;
+
+                    case RETANGULO:
+                         float left = min(x0, event.getX());
+                         float top = min(y0, event.getY());
+                         float right = max(x0, event.getX());
+                         float bottom = max(y0, event.getY());
+                         courrentPath.reset();
+                         courrentPath.addRect(left,top,right,bottom,Path.Direction.CCW);
+
+
+                    break;
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 addCamada();

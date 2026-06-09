@@ -26,5 +26,17 @@
         tools:layout_editor_absoluteY="15dp"
         tools:layout_editor_absoluteX="19dp"/>
 
+    <ImageView
+        android:id="@+id/tapButton"
+        android:layout_width="44dp"
+        android:layout_height="43dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.354"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.021"
+        app:srcCompat="@drawable/tap" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

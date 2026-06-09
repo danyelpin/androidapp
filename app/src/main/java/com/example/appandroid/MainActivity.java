@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,9 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     Button buttonMudarCor;
     SimplePaint simplePaint;
+    ImageView btnCirculo;
+    //        btnRetangulo;
+    //        btnLinha
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
@@ -46,6 +50,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         buttonMudarCor = findViewById(R.id.buttonMudaCor);
         simplePaint = findViewById(R.id.simplePaint);
+        btnCirculo = findViewById(R.id.tapButton);
+        //tenho que criar um botao para a linha...
+        //btnRetangulo = findViewById(R.id._____).....
+
+        btnCirculo.setOnClickListener(v->{
+            simplePaint.setFerramenta(SimplePaint.Ferramenta.CIRCULO);
+        });
+
+        //btnRetangulo.setOnClickListener(v->{
+        //simplePaint.setFerramente(SimplePaint.Ferramente.RETANGULO);
+        //});
 
         buttonMudarCor.setOnClickListener(v->{
             new ColorPickerDialog.Builder(this)
