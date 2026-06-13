@@ -1,13 +1,18 @@
 package com.example.appandroid;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,68 +27,75 @@ import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    Button buttonMudarCor;
-    SimplePaint simplePaint;
-    ImageView btnCirculo;
-    //        btnRetangulo;
-    //        btnLinha
+    SQLiteDatabase sqLiteDatabase;
+    ListView listView;
+    EditText editText;
+    Button button;
+    ArrayList<String> lista;
+    ArrayAdapter<String> adapter;
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        setContentView(R.layout.activity_main);
-
-
-
-    }
-    public void mudaCor(ColorEnvelope envelope){
-        simplePaint.mudarCor(envelope.getColor());
-    }
-
-    //criar um enum talvez no simple paint
-    //pra criar uma linha, ou circulo, retangulo
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState){
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        buttonMudarCor = findViewById(R.id.buttonMudaCor);
-        simplePaint = findViewById(R.id.simplePaint);
-        btnCirculo = findViewById(R.id.tapButton);
-        //tenho que criar um botao para a linha...
-        //btnRetangulo = findViewById(R.id._____).....
 
-        btnCirculo.setOnClickListener(v->{
-            simplePaint.setFerramenta(SimplePaint.Ferramenta.CIRCULO);
+        listView = findViewById(R.id.listview);
+        editText = findViewById(R.id.editTextText);
+        button = findViewById(R.id.button);
+
+        button.setOnClickListener(v->{
+            String string = editText.getText().toString();
+            ContentValues contentValues = new ContentValues();
+            //contentValues.put("id",1);
+            contentValues.put("titulo", "Nota 1");
+            contentValues.put("conteudo", "Conteudo da nota 1");
+            sqLiteDatabase.insert("notas", null, contentValues);
+
+            listarDB();
         });
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main),
+                (v, insets) -> {
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(systemBars.left,  systemBars.top,
+                            systemBars.right, systemBars.bottom);
+                    return insets;
+                });
 
-        //btnRetangulo.setOnClickListener(v->{
-        //simplePaint.setFerramente(SimplePaint.Ferramente.RETANGULO);
-        //});
+    sqLiteDatabase = openOrCreateDatabase("banco.db", MODE_PRIVATE, null);
 
-        buttonMudarCor.setOnClickListener(v->{
-            new ColorPickerDialog.Builder(this)
-                    .setTitle("Mude a cor do desenho")
-                    .setPreferenceName("MyColorPickerDialog")
-                    .setPositiveButton("Confirmar",
-                            new ColorEnvelopeListener() {
-                                @Override
-                                public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                                    mudaCor(envelope);
-                                }
-                            })
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            })
-                    .attachAlphaSlideBar(true) // the default value is true.
-                    .attachBrightnessSlideBar(true)  // the default value is true.
-                    .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
-                    .show();
-        });
+    sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS notas (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "titulo TEXT, conteudo TEXT)");
+    sqLiteDatabase.execSQL("INSERT INTO notas (id, titulo, conteudo) VALUES (1, 'nota 1' ," +
+            "'Conteudo da nota 1')");
+
+
+
+
+
+
+    }
+    public void listarDB(){
+        //Recuperar dados
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM notas", null);
+        cursor.moveToFirst();
+        lista = new ArrayList<>();
+
+        ArrayList<String> Lista = new ArrayList<>();
+        while(!cursor.isAfterLast()){
+
+            //cursor.getColumnIndex("id");
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String titulo = cursor.getString(cursor.getColumnIndex("titulo"));
+            String conteudo = cursor.getString(cursor.getColumnIndex("conteudo"));
+            lista.add("id:" +Integer.toString(id)+"titulo" +titulo);
+            cursor.moveToNext();
+            Log.d("SELECT NOTAS", "id:"+id+" titulo:"+titulo+" conteudo: "+conteudo);
+        }
+        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,Lista);
+        listView.setAdapter(adapter);
     }
 }
