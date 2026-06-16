@@ -34,20 +34,36 @@ public class MainActivity extends AppCompatActivity {
     SQLiteDatabase sqLiteDatabase;
     ListView listView;
     EditText editText;
+    private NotaController notaController;
+    //Vai ter que adicionar os buttons update, delete, research, insert
     Button button;
     ArrayList<String> lista;
     ArrayAdapter<String> adapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        notaController = new NotaController(getApplicationContext());
 
         listView = findViewById(R.id.listview);
         editText = findViewById(R.id.editTextText);
         button = findViewById(R.id.button);
 
+
         button.setOnClickListener(v->{
+            notaController.listarNotas();
+        });
+
+        //outro button com insert
+        //String nota = etName.getText().toString();
+        //notaController.inserirNovaNota();
+        //vai ter que ser criado os botoes do crud
+
+
+
+
+
+        /*button.setOnClickListener(v->{
             String string = editText.getText().toString();
             ContentValues contentValues = new ContentValues();
             //contentValues.put("id",1);
@@ -80,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void listarDB(){
         //Recuperar dados
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM notas", null);
+        /*Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM notas", null);
         cursor.moveToFirst();
         lista = new ArrayList<>();
 
@@ -97,5 +113,5 @@ public class MainActivity extends AppCompatActivity {
         }
         adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,Lista);
         listView.setAdapter(adapter);
-    }
-}
+    }*/
+}}

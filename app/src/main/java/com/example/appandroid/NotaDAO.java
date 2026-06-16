@@ -29,6 +29,20 @@ public class NotaDAO {
 
     }
 
+    public Nota updateNota(Nota n){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("titulo", n.titulo);
+            contentValues.put("conteudo", n.conteudo);
+            int linhasAfetadas = db.update("notas", contentValues, "id=?",
+                new String[]{String.valueOf(n.id)}
+        );
+
+        if(linhasAfetadas > 0){
+            return n;
+        };
+        return null;
+    }
+
     public void deleteNota(int id){
         Cursor c = db.rawQuery("SELECT * FROM notas WHERE id=?", new String[]{Integer.toString(id)});
         if(c.moveToFirst()){

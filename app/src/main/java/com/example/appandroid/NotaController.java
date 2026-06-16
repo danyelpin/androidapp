@@ -21,6 +21,10 @@ public class NotaController {
         notaDAO.getNota(id);
         return null;
     }
+    public boolean updateNota(Nota n){
+        notaDAO.updateNota(n);
+        return false;
+    }
     public ArrayList<Nota> listarNotas(){
         return notaDAO.listarNotas();
     }
