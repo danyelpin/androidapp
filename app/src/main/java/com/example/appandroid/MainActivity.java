@@ -41,13 +41,17 @@ public class MainActivity extends AppCompatActivity {
 
     LocationManager locationManager;
     MapView mapView;
+    TextView textView;
+
+    Marker marker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.textView);
+        textView = findViewById(R.id.textView);
         mapView=findViewById(R.id.map);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -56,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
         });
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
+        mapInit();
+
         mapView.setTileSource(TileSourceFactory.MAPNIK);
-        mapView.setMultiTouchControls(true);
+        //mapView.setMultiTouchControls(true);
         checkLocationPermission();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         //Location localizacao = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -65,20 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 location -> {
 
         textView.setText("Latitude" + location.getLatitude() + "\n Longitude" + location.getLatitude());
-        mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(15.0);
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-        mapView.getController().setCenter(geoPoint);
-        mapView.getController().setZoom(18.0);
-        mapView.getController().animateTo(geoPoint);
-        Marker marker = new Marker(mapView);
-        marker.setPosition(geoPoint);
-        marker.setTitle("Voce esta aqui");
-        mapView.getOverlays().add(marker);
-    });
 
+        showLocationOnMap(location);
+
+
+    });
 
 
         /*if (localizacao != null) {
@@ -89,6 +86,29 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("Localizacao nao disponivel");
         }*/
 
+    }
+
+    public void mapInit() {
+        mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(15.0);
+
+    }
+
+    public void showLocationOnMap(Location location){
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+
+        mapView.getController().setCenter(geoPoint);
+        mapView.getController().setZoom(18.0);
+        mapView.getController().animateTo(geoPoint);
+        if(marker == null) {
+            marker = new Marker(mapView);
+        }
+        marker.setPosition(geoPoint);
+        marker.setTitle("Voce esta aqui");
+        //mapView.getOverlays().clear();
+        mapView.getOverlays().add(marker);
     }
 
 
