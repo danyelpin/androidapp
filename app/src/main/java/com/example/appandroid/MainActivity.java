@@ -26,6 +26,8 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     Button buttonMudarCor;
+    Button btnRetangulo;
+    Button btnLinha;
     SimplePaint simplePaint;
     ImageView btnCirculo;
     //        btnRetangulo;
@@ -51,11 +53,20 @@ public class MainActivity extends AppCompatActivity {
         buttonMudarCor = findViewById(R.id.buttonMudaCor);
         simplePaint = findViewById(R.id.simplePaint);
         btnCirculo = findViewById(R.id.tapButton);
+        btnLinha = findViewById(R.id.btnlinha);
+        btnRetangulo = findViewById(R.id.btnretangulo);
+
         //tenho que criar um botao para a linha...
         //btnRetangulo = findViewById(R.id._____).....
 
         btnCirculo.setOnClickListener(v->{
             simplePaint.setFerramenta(SimplePaint.Ferramenta.CIRCULO);
+        });
+        btnLinha.setOnClickListener(v->{
+            simplePaint.setFerramenta(SimplePaint.Ferramenta.LINHA);
+        });
+        btnRetangulo.setOnClickListener(v->{
+            simplePaint.setFerramenta(SimplePaint.Ferramenta.RETANGULO);
         });
 
         //btnRetangulo.setOnClickListener(v->{

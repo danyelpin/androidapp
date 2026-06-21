@@ -38,5 +38,26 @@
         app:layout_constraintVertical_bias="0.021"
         app:srcCompat="@drawable/tap" />
 
+    <Button
+        android:id="@+id/btnlinha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Linha"
+        app:layout_constraintBottom_toTopOf="@+id/simplePaint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.073"
+        app:layout_constraintStart_toEndOf="@+id/tapButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.933" />
+
+    <Button
+        android:id="@+id/btnretangulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retangulo"
+        app:layout_constraintBottom_toBottomOf="@+id/btnlinha"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnlinha" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
