@@ -15,15 +15,14 @@ public class NotaController {
     }
     public boolean deleteNota(int id){
         notaDAO.deleteNota(id);
-        return false;
+        return true;
     }
     public Nota getNota(int id){
-        notaDAO.getNota(id);
-        return null;
+        return notaDAO.getNota(id);
     }
     public boolean updateNota(Nota n){
-        notaDAO.updateNota(n);
-        return false;
+        Nota notaAtualizada = notaDAO.updateNota(n);
+        return notaAtualizada != null;
     }
     public ArrayList<Nota> listarNotas(){
         return notaDAO.listarNotas();

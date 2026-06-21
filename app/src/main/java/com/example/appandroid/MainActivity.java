@@ -37,8 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private NotaController notaController;
     //Vai ter que adicionar os buttons update, delete, research, insert
     Button button;
-    ArrayList<String> lista;
+    ArrayList<Nota> lista;
+    ArrayList<String> titulo;
     ArrayAdapter<String> adapter;
+    Nota notaSelecionada = null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +52,14 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
 
 
-        button.setOnClickListener(v->{
+        button.setOnClickListener(v -> {
             notaController.listarNotas();
+        });
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            notaSelecionada = lista.get(position);
+            editText.setText(notaSelecionada.titulo);
+            Toast.makeText(this, "Selecionado: " + notaSelecionada.titulo, Toast.LENGTH_SHORT).show();
         });
 
         //outro button com insert
@@ -60,8 +68,31 @@ public class MainActivity extends AppCompatActivity {
         //vai ter que ser criado os botoes do crud
 
 
+    }
 
+        public void atualizarLista () {
+            //Recuperar dados
+            lista = notaController.listarNotas();
+            titulo = notaController.listaTitulosNotas();
 
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, titulo);
+            listView.setAdapter(adapter);
+        }
+    }
+
+/*
+ArrayList<String> Lista = new ArrayList<>();
+        while(!cursor.isAfterLast()){
+
+            //cursor.getColumnIndex("id");
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String titulo = cursor.getString(cursor.getColumnIndex("titulo"));
+            String conteudo = cursor.getString(cursor.getColumnIndex("conteudo"));
+            lista.add("id:" +Integer.toString(id)+"titulo" +titulo);
+            cursor.moveToNext();
+            Log.d("SELECT NOTAS", "id:"+id+" titulo:"+titulo+" conteudo: "+conteudo);
+        }
+ */
 
         /*button.setOnClickListener(v->{
             String string = editText.getText().toString();
@@ -93,25 +124,4 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    }
-    public void listarDB(){
-        //Recuperar dados
-        /*Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM notas", null);
-        cursor.moveToFirst();
-        lista = new ArrayList<>();
-
-        ArrayList<String> Lista = new ArrayList<>();
-        while(!cursor.isAfterLast()){
-
-            //cursor.getColumnIndex("id");
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
-            String titulo = cursor.getString(cursor.getColumnIndex("titulo"));
-            String conteudo = cursor.getString(cursor.getColumnIndex("conteudo"));
-            lista.add("id:" +Integer.toString(id)+"titulo" +titulo);
-            cursor.moveToNext();
-            Log.d("SELECT NOTAS", "id:"+id+" titulo:"+titulo+" conteudo: "+conteudo);
-        }
-        adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,Lista);
-        listView.setAdapter(adapter);
     }*/
-}}

@@ -12,8 +12,8 @@ public class NotaDAO {
 
     public NotaDAO(Context context){
         db=context.openOrCreateDatabase("banco.db", Context.MODE_PRIVATE,null);
-        db.execSQL("INSERT INTO notas (id, titulo, conteudo) VALUES (1, 'nota 1' ," +
-                "'Conteudo da nota 1')");
+        //db.execSQL("INSERT INTO notas (id, titulo, conteudo) VALUES (1, 'nota 1' ," +
+        //        "'Conteudo da nota 1')");
     }
 
     public Nota insereNota(Nota n){
