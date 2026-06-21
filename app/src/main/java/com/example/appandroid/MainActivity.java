@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         preview = findViewById(R.id.preview);
@@ -73,42 +73,43 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, ContextCompat.getMainExecutor(this));
         }
+        imageButton.setOnClickListener(v -> {
+            changeCamera();
+        });
     }
 
-    void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
-        Preview previewView = new Preview.Builder()
-                .build();
+        void bindPreview (@NonNull ProcessCameraProvider cameraProvider){
+            Preview previewView = new Preview.Builder()
+                    .build();
 
-        //CameraSelector cameraSelector = new CameraSelector.Builder()
-        //        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-        //        .build();
-        cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
-
-        previewView.setSurfaceProvider(preview.getSurfaceProvider());
-
-        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, previewView);
-    }
-    public void changeCamera() {
-        if (cameraProvider == null) return;
-
-
-        if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
-            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
-        } else {
+            //CameraSelector cameraSelector = new CameraSelector.Builder()
+            //        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+            //        .build();
             cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+            previewView.setSurfaceProvider(preview.getSurfaceProvider());
+
+            Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, previewView);
+        }
+        public void changeCamera() {
+            if (cameraProvider == null) return;
+
+
+            if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
+                cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+            } else {
+                cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+            }
+
+
+            cameraProvider.unbindAll();
+
+
+            bindPreview(cameraProvider);
         }
 
 
-        cameraProvider.unbindAll();
 
-
-        bindPreview(cameraProvider);
-    }
-
-    imageButton.setOnClickListener(v -> {
-        changeCamera();
-    });
-}
 
 
     public boolean checkAndRequestPermission(){
@@ -119,3 +120,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 }
+
