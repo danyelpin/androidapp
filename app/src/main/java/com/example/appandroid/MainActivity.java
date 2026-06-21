@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,121 +20,102 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.LifecycleOwner;
 
-//import com.skydoves.colorpickerview.ColorEnvelope;
-//import com.skydoves.colorpickerview.ColorPickerDialog;
-//import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
-import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
-
-    LocationManager locationManager;
-    MapView mapView;
-    TextView textView;
-
-    Marker marker;
+    ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    PreviewView preview;
+    ImageButton imageButton;
+    CameraSelector cameraSelector;
+    ProcessCameraProvider cameraProvider;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        textView = findViewById(R.id.textView);
-        mapView=findViewById(R.id.map);
+        preview = findViewById(R.id.preview);
+        imageButton = findViewById(R.id.btnimage);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Configuration.getInstance().setUserAgentValue(getPackageName());
-
-        mapInit();
-
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
-        //mapView.setMultiTouchControls(true);
-        checkLocationPermission();
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        //Location localizacao = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,
-                location -> {
-
-        textView.setText("Latitude" + location.getLatitude() + "\n Longitude" + location.getLatitude());
-
-        showLocationOnMap(location);
 
 
-    });
+        if (checkAndRequestPermission()) {
+            cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+            cameraProviderFuture.addListener(() -> {
+                try {
+                    cameraProvider = cameraProviderFuture.get();
+                    bindPreview(cameraProvider);
+                } catch (ExecutionException | InterruptedException e) {
+                    // No errors need to be handled for this Future.
+                    // This should never be reached.
+                }
+            }, ContextCompat.getMainExecutor(this));
+        }
+    }
+
+    void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+        Preview previewView = new Preview.Builder()
+                .build();
+
+        //CameraSelector cameraSelector = new CameraSelector.Builder()
+        //        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+        //        .build();
+        cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+
+        previewView.setSurfaceProvider(preview.getSurfaceProvider());
+
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, previewView);
+    }
+    public void changeCamera() {
+        if (cameraProvider == null) return;
 
 
-        /*if (localizacao != null) {
-            double latitude = localizacao.getLatitude();
-            double longitude = localizacao.getLongitude();
-            textView.setText("Latitude" + latitude + "\n Longitude" + longitude);
+        if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) {
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
         } else {
-            textView.setText("Localizacao nao disponivel");
-        }*/
-
-    }
-
-    public void mapInit() {
-        mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(15.0);
-
-    }
-
-    public void showLocationOnMap(Location location){
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-
-        mapView.getController().setCenter(geoPoint);
-        mapView.getController().setZoom(18.0);
-        mapView.getController().animateTo(geoPoint);
-        if(marker == null) {
-            marker = new Marker(mapView);
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
         }
-        marker.setPosition(geoPoint);
-        marker.setTitle("Voce esta aqui");
-        //mapView.getOverlays().clear();
-        mapView.getOverlays().add(marker);
+
+
+        cameraProvider.unbindAll();
+
+
+        bindPreview(cameraProvider);
     }
 
+    imageButton.setOnClickListener(v -> {
+        changeCamera();
+    });
+}
 
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
-    private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
+    public boolean checkAndRequestPermission(){
+        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 100);
+            return false;
         }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-            grantResults, int deviceId) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //Permissao concedida, continuar com operacao
-            } else {
-                //Permissao negada, tratar o caso
-            }
-        }
+        return true;
     }
 }
