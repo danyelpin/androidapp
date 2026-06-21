@@ -27,11 +27,13 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences  sharedPreferences;
+    TextView textV;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        textV = findViewById(R.id.textView);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main),
                 (v, insets) -> {
         Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 //criar uma textview para visualizar
 
 
-        //textView.setText(sharedPreferences.getString("nome","").toString());
+        textV.setText(sharedPreferences.getString("nome","").toString());
 
 
     }
