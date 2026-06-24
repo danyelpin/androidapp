@@ -14,6 +14,10 @@ public class NotaDAO {
         db=context.openOrCreateDatabase("banco.db", Context.MODE_PRIVATE,null);
         //db.execSQL("INSERT INTO notas (id, titulo, conteudo) VALUES (1, 'nota 1' ," +
         //        "'Conteudo da nota 1')");
+        db.execSQL("CREATE TABLE IF NOT EXISTS notas (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "titulo TEXT, " +
+                "conteudo TEXT)");
     }
 
     public Nota insereNota(Nota n){
@@ -69,6 +73,8 @@ public class NotaDAO {
             result.add(new Nota(c.getInt(0), c.getString(1), c.getString(2)));
             c.moveToNext();
         }
+
+        c.close();
         //Rawquery
         return result;
     }

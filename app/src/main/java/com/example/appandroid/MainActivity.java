@@ -1,42 +1,25 @@
 package com.example.appandroid;
 
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.skydoves.colorpickerview.ColorEnvelope;
-import com.skydoves.colorpickerview.ColorPickerDialog;
-import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     SQLiteDatabase sqLiteDatabase;
     ListView listView;
-    EditText editText;
+    EditText editTitulo, editConteudo;
     private NotaController notaController;
     //Vai ter que adicionar os buttons update, delete, research, insert
-    Button button;
+    Button btnInsert, btnDelete, btnUpdate;
     ArrayList<Nota> lista;
     ArrayList<String> titulo;
     ArrayAdapter<String> adapter;
@@ -48,17 +31,71 @@ public class MainActivity extends AppCompatActivity {
         notaController = new NotaController(getApplicationContext());
 
         listView = findViewById(R.id.listview);
-        editText = findViewById(R.id.editTextText);
-        button = findViewById(R.id.button);
+        editTitulo = findViewById(R.id.editTitulo);
+        editConteudo = findViewById(R.id.editConteudo);
+        btnInsert = findViewById(R.id.btnInsert);
+        btnDelete = findViewById(R.id.btnDelete);
+        btnUpdate = findViewById(R.id.btnUpdate);
 
 
-        button.setOnClickListener(v -> {
-            notaController.listarNotas();
+        atualizarLista();
+
+        btnInsert.setOnClickListener(v -> {
+                    String txtTitulo = editTitulo.getText().toString().trim();
+                    String txtConteudo = editConteudo.getText().toString().trim();
+                    if (!txtTitulo.isEmpty() && !txtConteudo.isEmpty()) {
+                        Nota novaNota = new Nota(txtConteudo, txtTitulo);
+                        notaController.inserirNovaNota(novaNota);
+                        editTitulo.setText("");
+                        editConteudo.setText("");
+                        atualizarLista();
+                        Toast.makeText(this, "Nota inserida com sucesso!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Digite um título para a nota", Toast.LENGTH_SHORT).show();
+                    }
         });
+
+        btnUpdate.setOnClickListener(v -> {
+            if (notaSelecionada != null) {
+                String novoTitulo = editTitulo.getText().toString().trim();
+                String novoConteudo = editConteudo.getText().toString().trim();
+                if (!novoTitulo.isEmpty()) {
+                    notaSelecionada.titulo = novoTitulo;
+                    notaSelecionada.conteudo = novoConteudo;
+                    boolean sucesso = notaController.updateNota(notaSelecionada);
+                    if (sucesso) {
+                        editTitulo.setText("");
+                        editConteudo.setText("");
+                        notaSelecionada = null;
+                        atualizarLista();
+                        Toast.makeText(this, "Nota atualizada!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Selecione uma nota na lista primeiro!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnDelete.setOnClickListener(v -> {
+                    if (notaSelecionada != null) {
+                        notaController.deleteNota(notaSelecionada.id);
+                        editTitulo.setText("");
+                        editConteudo.setText("");
+                        notaSelecionada = null;
+
+                        atualizarLista();
+                        Toast.makeText(this, "Nota removida!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Selecione uma nota na lista primeiro!", Toast.LENGTH_SHORT).show();
+                    }
+        });
+
+
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             notaSelecionada = lista.get(position);
-            editText.setText(notaSelecionada.titulo);
+            editTitulo.setText(notaSelecionada.titulo);
+            editConteudo.setText(notaSelecionada.conteudo);
             Toast.makeText(this, "Selecionado: " + notaSelecionada.titulo, Toast.LENGTH_SHORT).show();
         });
 
@@ -74,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
             //Recuperar dados
             lista = notaController.listarNotas();
             titulo = notaController.listaTitulosNotas();
+
+            if (titulo == null) {
+                titulo = new ArrayList<>();
+            }
 
             adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, titulo);
             listView.setAdapter(adapter);
@@ -92,9 +133,9 @@ ArrayList<String> Lista = new ArrayList<>();
             cursor.moveToNext();
             Log.d("SELECT NOTAS", "id:"+id+" titulo:"+titulo+" conteudo: "+conteudo);
         }
- */
 
-        /*button.setOnClickListener(v->{
+
+        button.setOnClickListener(v->{
             String string = editText.getText().toString();
             ContentValues contentValues = new ContentValues();
             //contentValues.put("id",1);
